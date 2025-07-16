@@ -1,9 +1,8 @@
 name: Build and publish Docker image
 
 on:
-  push:
-    branches: ["main"]
-  workflow_dispatch:
+  release:
+    types: [published]
 
 jobs:
   build:
@@ -19,10 +18,15 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Set image tag
+        id: vars
+        run: echo "TAG=${GITHUB_REF#refs/tags/}" >> "$GITHUB_OUTPUT"
       - name: Build and push
         uses: docker/build-push-action@v5
         with:
           context: .
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/gemini-cli:latest
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/gemini-cli:${{ steps.vars.outputs.TAG }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/gemini-cli:latest
 
