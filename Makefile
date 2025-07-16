@@ -1,17 +1,21 @@
 IMAGE_NAME ?= gemini-cli
 
-.PHONY: build run
-
+.PHONY: build run clean-volumes
 build:
 	docker build -t $(IMAGE_NAME) .
-
 run:
 	docker run -it --rm \
-	    -v $(PWD):/workspace \
-	    -v $(HOME)/.gitconfig:/root/.gitconfig:ro \
-	    -e GEMINI_API_KEY \
-	    -e GOOGLE_API_KEY \
-	    -e GOOGLE_CLOUD_PROJECT \
-	    -e GOOGLE_CLOUD_LOCATION \
-	    -e GOOGLE_GENAI_USE_VERTEXAI \
-	    $(IMAGE_NAME) $(ARGS)
+		-v $(PWD):/workspace \
+		-v gemini-config:/root/.config \
+		-v gemini-cache:/root/.cache \
+		-v npm-cache:/root/.npm \
+		-e GEMINI_API_KEY \
+		-e GOOGLE_API_KEY \
+		-e GOOGLE_CLOUD_PROJECT \
+		-e GOOGLE_CLOUD_LOCATION \
+		-e GOOGLE_GENAI_USE_VERTEXAI \
+		-e GIT_USER_NAME \
+		-e GIT_USER_EMAIL \
+		$(IMAGE_NAME) $(ARGS)
+clean-volumes:
+	docker volume rm gemini-config gemini-cache npm-cache 2>/dev/null || true
