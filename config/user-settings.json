@@ -11,5 +11,6 @@
   },
   "contextFileName": "GEMINI.md",
   "selectedAuthType": "gemini-api-key",
-  "usageStatisticsEnabled": false
+  "usageStatisticsEnabled": false,
+  "sandbox": "docker"
 }

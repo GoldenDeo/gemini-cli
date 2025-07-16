@@ -10,7 +10,7 @@ PROJECT_CONFIG ?= $(CONFIG_DIR)/project-settings.json
 SYSTEM_CONFIG ?= $(CONFIG_DIR)/system-settings.json
 MEMORY_FILE ?= $(CONFIG_DIR)/GEMINI.md
 
-.PHONY: build run clean-volumes push login publish setup-config
+.PHONY: build run run-sandbox clean-volumes push login publish setup-config
 
 build:
 	docker build -t $(IMAGE_NAME) .
@@ -91,6 +91,28 @@ push: build
 
 publish: login push
 	echo "Published $(FULL_IMAGE) to Docker Hub"
+
+# Run with sandbox enabled
+run-sandbox: setup-config
+	@mkdir -p artifacts
+	docker run -it --rm \
+		-v $(PWD)/artifacts:/workspace \
+		-v gemini-config:/root/.config \
+		-v gemini-cache:/root/.cache \
+		-v npm-cache:/root/.npm \
+		-v $(PWD)/$(SYSTEM_CONFIG):/etc/gemini-cli/settings.json \
+		-v $(PWD)/$(USER_CONFIG):/root/.gemini/settings.json \
+		-v $(PWD)/$(PROJECT_CONFIG):/workspace/.gemini/settings.json \
+		-v $(PWD)/$(MEMORY_FILE):/root/.gemini/GEMINI.md \
+		-e GEMINI_API_KEY \
+		-e GOOGLE_API_KEY \
+		-e GOOGLE_CLOUD_PROJECT \
+		-e GOOGLE_CLOUD_LOCATION \
+		-e GOOGLE_GENAI_USE_VERTEXAI \
+		-e GIT_USER_NAME \
+		-e GIT_USER_EMAIL \
+		--privileged \
+		$(IMAGE_NAME) $(ARGS)
 
 clean-volumes:
 	docker volume rm gemini-config gemini-cache npm-cache 2>/dev/null || true
