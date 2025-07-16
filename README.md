@@ -75,7 +75,7 @@ Makefile automatically passes these variables to the container:
 ### Getting API key
 1. Go to [Google AI Studio](https://aistudio.google.com/apikey)
 2. Create an API key
-3. Export it: `export GOOGLE_API_KEY="your_key"`
+3. Export it: `export GEMINI_API_KEY="your_key"`
 
 ### Git configuration
 Set your Git identity via environment variables:
