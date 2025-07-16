@@ -225,4 +225,66 @@ All Gemini CLI work happens in the `artifacts/` directory:
 - Projects are created in `./artifacts/`
 - This keeps your main project directory clean!
 
-Everything simple and it works! 🚀
+## Configuration Files
+
+This Docker setup supports all Gemini CLI configuration files in a structured way.
+
+### Configuration Directory
+
+All configuration files are stored in the `./config` directory (created automatically):
+
+```
+config/
+  ├── user-settings.json    # User-level settings
+  ├── project-settings.json # Project-level settings  
+  ├── system-settings.json  # System-level settings
+  └── GEMINI.md             # Memory/context file
+```
+
+The `setup-config` target creates this directory structure and populates it with default files if they don't exist.
+
+### Using Configuration Files
+
+When running with the default configuration:
+
+```bash
+make run
+```
+
+This automatically sets up the config directory, mounts the configuration files, and starts Gemini CLI.
+
+### Using Custom Configuration Paths
+
+You can specify custom paths for configuration files:
+
+```bash
+make run CONFIG_DIR=./my-configs USER_CONFIG=./special-settings.json MEMORY_FILE=./instructions.md
+```
+
+### Using Existing Project Configuration
+
+If you're working with a project that already has its own `.gemini` configuration:
+
+```bash
+make run-with-project-config
+```
+
+This mounts your project's `.gemini` directory directly, preserving any existing configuration.
+
+### Direct Docker Usage
+
+Or when running directly with Docker:
+
+```bash
+docker run -it --rm \
+  -v $(pwd)/artifacts:/workspace \
+  -v gemini-config:/root/.config \
+  -v gemini-cache:/root/.cache \
+  -v npm-cache:/root/.npm \
+  -v $(pwd)/config/user-settings.json:/root/.gemini/settings.json \
+  -v $(pwd)/config/project-settings.json:/workspace/.gemini/settings.json \
+  -v $(pwd)/config/system-settings.json:/etc/gemini-cli/settings.json \
+  -v $(pwd)/config/GEMINI.md:/root/.gemini/GEMINI.md \
+  -e GOOGLE_API_KEY="your_key_here" \
+  your-dockerhub-username/gemini-cli
+```
