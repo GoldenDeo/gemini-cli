@@ -1,6 +1,9 @@
 # Environment files with secrets
 .env
 
+# Gemini CLI artifacts directory
+artifacts/
+
 # OS files
 .DS_Store
 Thumbs.db

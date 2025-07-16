@@ -4,8 +4,9 @@ IMAGE_NAME ?= gemini-cli
 build:
 	docker build -t $(IMAGE_NAME) .
 run:
+	@mkdir -p artifacts
 	docker run -it --rm \
-		-v $(PWD):/workspace \
+		-v $(PWD)/artifacts:/workspace \
 		-v gemini-config:/root/.config \
 		-v gemini-cache:/root/.cache \
 		-v npm-cache:/root/.npm \

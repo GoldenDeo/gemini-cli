@@ -26,8 +26,9 @@ make run
 
 ### Makefile
 - `build` - builds Docker image
-- `run` - runs with current directory mounted and environment variables passed
+- `run` - runs with `artifacts/` directory mounted as workspace and environment variables passed
 - `clean-volumes` - removes all persistent volumes (resets configuration)
+- Automatically creates `artifacts/` directory for workspace
 - Preserves Gemini CLI configuration, cache, and npm artifacts between runs
 
 ## Persistent Storage
@@ -96,7 +97,7 @@ git config --global user.email "your@email.com"
 
 ✅ **Minimalism** - Only what's necessary, nothing extra  
 ✅ **Git integration** - Configure via environment variables  
-✅ **Current directory** - Available as `/workspace`  
+✅ **Clean workspace** - Uses `artifacts/` directory as `/workspace`  
 ✅ **Environment variables** - Automatically passed through  
 ✅ **Persistent storage** - Config, cache, and artifacts preserved  
 ✅ **No re-authentication** - Login once, use everywhere
@@ -112,11 +113,11 @@ make run
 make run
 > Analyze this codebase
 
-# Create a new file  
+# Create a new file (saved to artifacts/ directory)
 make run  
 > Create a Python script that...
 
-# Work with Git
+# Work with Git projects in artifacts/
 make run
 > Write a commit message for current changes
 
@@ -124,5 +125,13 @@ make run
 make run
 > Create a new Node.js project with dependencies
 ```
+
+## Working Directory
+
+All Gemini CLI work happens in the `artifacts/` directory:
+- Generated files appear in `./artifacts/`
+- Git repositories should be cloned into `./artifacts/`
+- Projects are created in `./artifacts/`
+- This keeps your main project directory clean!
 
 Everything simple and it works! 🚀
