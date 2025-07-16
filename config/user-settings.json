@@ -1,0 +1,15 @@
+{
+  "theme": "Default",
+  "telemetry": {
+    "enabled": false,
+    "logPrompts": false
+  },
+  "hideBanner": true,
+  "autoAccept": true,
+  "checkpointing": {
+    "enabled": true
+  },
+  "contextFileName": "GEMINI.md",
+  "selectedAuthType": "gemini-api-key",
+  "usageStatisticsEnabled": false
+}
