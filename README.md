@@ -2,7 +2,25 @@
 
 Simple Docker setup for Google Gemini CLI - minimalist approach without unnecessary complications.
 
-## Quick Start
+## Quick Start (using Docker Hub)
+
+```bash
+# Just run without building (fastest way)
+export GOOGLE_API_KEY="your_api_key_here"
+export GIT_USER_NAME="Your Name"
+export GIT_USER_EMAIL="your@email.com"
+docker run -it --rm \
+  -v $(pwd)/artifacts:/workspace \
+  -v gemini-config:/root/.config \
+  -v gemini-cache:/root/.cache \
+  -v npm-cache:/root/.npm \
+  -e GOOGLE_API_KEY \
+  -e GIT_USER_NAME \
+  -e GIT_USER_EMAIL \
+  your-dockerhub-username/gemini-cli
+```
+
+## Quick Start (building locally)
 
 ```bash
 # Build the image
@@ -25,8 +43,12 @@ make run
 - `ENTRYPOINT ["gemini"]` - direct launch
 
 ### Makefile
-- `build` - builds Docker image
-- `run` - runs with `artifacts/` directory mounted as workspace and environment variables passed
+- `build` - builds Docker image and tags for Docker Hub
+- `run` - runs locally built image with `artifacts/` directory mounted
+- `run-hub` - runs image from Docker Hub
+- `login` - login to Docker Hub
+- `push` - builds and pushes to Docker Hub
+- `publish` - login + push in one command
 - `clean-volumes` - removes all persistent volumes (resets configuration)
 - Automatically creates `artifacts/` directory for workspace
 - Preserves Gemini CLI configuration, cache, and npm artifacts between runs
@@ -49,13 +71,62 @@ make clean-volumes
 
 ## Usage
 
-### Basic usage
+### Using from Docker Hub (recommended)
+```bash
+# Set your environment variables
+export GOOGLE_API_KEY="your_key"
+export GIT_USER_NAME="Your Name"  
+export GIT_USER_EMAIL="your@email.com"
+
+# Run directly from Docker Hub
+make run-hub DOCKER_REPO=your-dockerhub-username
+
+# Or run manually:
+docker run -it --rm \
+  -v $(pwd)/artifacts:/workspace \
+  -v gemini-config:/root/.config \
+  -v gemini-cache:/root/.cache \
+  -v npm-cache:/root/.npm \
+  -e GOOGLE_API_KEY \
+  -e GIT_USER_NAME \
+  -e GIT_USER_EMAIL \
+  your-dockerhub-username/gemini-cli
+```
+
+### Building locally
 ```bash
 make build
 export GOOGLE_API_KEY="your_key"
 export GIT_USER_NAME="Your Name"  
 export GIT_USER_EMAIL="your@email.com"
 make run
+```
+
+### Publishing to Docker Hub
+
+1. **Set your Docker Hub username:**
+```bash
+export DOCKER_REPO=your-dockerhub-username
+# or edit Makefile and change DOCKER_REPO variable
+```
+
+2. **Publish:**
+```bash
+# Login and push in one command
+make publish DOCKER_REPO=your-dockerhub-username
+
+# Or step by step:
+make login           # Login to Docker Hub
+make push           # Build and push
+```
+
+3. **Multi-platform build (optional):**
+```bash
+# For ARM64 + AMD64 support
+docker buildx create --use
+docker buildx build --platform linux/amd64,linux/arm64 \
+  -t your-dockerhub-username/gemini-cli:latest \
+  --push .
 ```
 
 ### With additional arguments
@@ -96,14 +167,34 @@ git config --global user.email "your@email.com"
 ## Features
 
 ✅ **Minimalism** - Only what's necessary, nothing extra  
+✅ **Docker Hub ready** - Easy distribution and instant usage  
 ✅ **Git integration** - Configure via environment variables  
 ✅ **Clean workspace** - Uses `artifacts/` directory as `/workspace`  
 ✅ **Environment variables** - Automatically passed through  
 ✅ **Persistent storage** - Config, cache, and artifacts preserved  
-✅ **No re-authentication** - Login once, use everywhere
+✅ **No re-authentication** - Login once, use everywhere  
+✅ **Multi-platform** - Supports AMD64 and ARM64 architectures
 
 ## Examples
 
+### Using Docker Hub image (no build required)
+```bash
+# Quick start with Docker Hub
+export GOOGLE_API_KEY="your_key"
+docker run -it --rm \
+  -v $(pwd)/artifacts:/workspace \
+  -v gemini-config:/root/.config \
+  -e GOOGLE_API_KEY \
+  your-dockerhub-username/gemini-cli
+
+# First run - authenticate once
+> (Authentication happens here)
+
+# Create a new project
+> Create a Python web scraper that extracts article titles
+```
+
+### Local development workflow
 ```bash
 # First run - authenticate once
 make run
